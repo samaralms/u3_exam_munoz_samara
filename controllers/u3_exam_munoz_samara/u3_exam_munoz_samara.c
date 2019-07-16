@@ -27,14 +27,11 @@
 //////////MACROS////////////////
 #define TIME_STEP 64
 #define PI 3.1416
-#define OBSTACLE_DISTANCE 30.0
+#define OBSTACLE_DISTANCE 200.0
 
 
-int key;
 
-double distance_left = 0;
-double distance_right = 0;
-double position = 0;
+///global variables////
 int turn_left = 0;
 int turn_right = 0;
 double compare;
@@ -42,7 +39,16 @@ int a = 1;
 int m = 0;
 int c=0;
 float angularVel, linealVel,RPM;
-  
+
+/////encoder//////////
+double position = 0;
+
+////distance sensor////
+double distance_left = 0;
+double distance_right = 0;
+
+/////keyboard//////////
+int key;
   
 
 
@@ -95,8 +101,8 @@ int main(int argc, char **argv)
   void Manual(){
 
     //Read Distance Sensor//
-    distance_left = wb_distance_sensor_get_value(disleft);
-    distance_right = wb_distance_sensor_get_value(disright);
+    distance_left = (wb_distance_sensor_get_value(disleft)*0.2)/65535;
+    distance_right = (wb_distance_sensor_get_value(disright)*0.2)/65535;
 
 
     //Read Position Sensor//
@@ -117,9 +123,9 @@ int main(int argc, char **argv)
     if(key==WB_KEYBOARD_UP){
 
       wb_motor_set_position(wheel_1, INFINITY);
-      wb_motor_set_velocity(wheel_1, 0);
+      wb_motor_set_velocity(wheel_1, -5);
       wb_motor_set_position(wheel_2, INFINITY);
-      wb_motor_set_velocity(wheel_2, 0);
+      wb_motor_set_velocity(wheel_2, 5);
       wb_motor_set_position(wheel_3, INFINITY);
       wb_motor_set_velocity(wheel_3, 0);
       }
@@ -127,9 +133,9 @@ int main(int argc, char **argv)
     if(key==WB_KEYBOARD_DOWN){
 
       wb_motor_set_position(wheel_1, INFINITY);
-      wb_motor_set_velocity(wheel_1, 0);
+      wb_motor_set_velocity(wheel_1, 5);
       wb_motor_set_position(wheel_2, INFINITY);
-      wb_motor_set_velocity(wheel_2, 0);
+      wb_motor_set_velocity(wheel_2, -5);
       wb_motor_set_position(wheel_3, INFINITY);
       wb_motor_set_velocity(wheel_3, 0);
       }
@@ -137,23 +143,25 @@ int main(int argc, char **argv)
       if(key==WB_KEYBOARD_LEFT){
 
       wb_motor_set_position(wheel_1, INFINITY);
-      wb_motor_set_velocity(wheel_1, -3);
+      wb_motor_set_velocity(wheel_1, -4);
       wb_motor_set_position(wheel_2, INFINITY);
-      wb_motor_set_velocity(wheel_2, -3);
+      wb_motor_set_velocity(wheel_2, -4);
       wb_motor_set_position(wheel_3, INFINITY);
-      wb_motor_set_velocity(wheel_3, 3*1.9);
+      wb_motor_set_velocity(wheel_3, 8);
       }
 
       if(key==WB_KEYBOARD_RIGHT){
 
       wb_motor_set_position(wheel_1, INFINITY);
-      wb_motor_set_velocity(wheel_1, 3);
+      wb_motor_set_velocity(wheel_1, 4);
       wb_motor_set_position(wheel_2, INFINITY);
-      wb_motor_set_velocity(wheel_2, 3);
+      wb_motor_set_velocity(wheel_2, 4);
       wb_motor_set_position(wheel_3, INFINITY);
-      wb_motor_set_velocity(wheel_3, -3*1.9);
+      wb_motor_set_velocity(wheel_3, -8);
       }
 
+      
+      //right 45 degrees//
       if(key == 'S' ){
       compare = position + 0.785398; //0.7853... = 45 degrees to the left
       turn_left = 1;
@@ -175,7 +183,7 @@ int main(int argc, char **argv)
             }
       }
 
-      
+      //left 45 degrees//
       if(key == 'A' ){
       compare = position - 0.785398; //0.7853... = 45 degrees to the left
       turn_right = 1;
@@ -183,7 +191,7 @@ int main(int argc, char **argv)
 
         if(turn_right == 1){
   
-            if(position <= compare){
+            if(position >= compare){
               wb_motor_set_velocity(wheel_1, -5);
               wb_motor_set_velocity(wheel_2, -5);
               wb_motor_set_velocity(wheel_3, -5);
@@ -195,6 +203,8 @@ int main(int argc, char **argv)
               wb_motor_set_velocity(wheel_3, 0);
               turn_right = 0;
               }
+              
+              
          }
        }
        
@@ -202,10 +212,11 @@ int main(int argc, char **argv)
    
    
    void Automatic(){
+   
        
-          //Read Distance Sensor//
-      distance_left = wb_distance_sensor_get_value(disleft);
-      distance_right = wb_distance_sensor_get_value(disright);
+      //Read Distance Sensor//
+      distance_left = (wb_distance_sensor_get_value(disleft)*0.2)/65535;
+      distance_right = (wb_distance_sensor_get_value(disright)*0.2)/65535;
   
   
       //Read Position Sensor//
@@ -216,11 +227,11 @@ int main(int argc, char **argv)
       
       linealVel= ((compare/0.064)*0.06);
       angularVel= (compare/0.064);
-      RPM =(compare/0.064)*(60/(2*3.1416));
-  
+      RPM =(compare*60)/(2*PI);
       
-  
-      //Print Read Values//
+      //RPM =(compare/0.064)*(60/(2*3.1416));
+      
+       //Print Read Values//
   
        printf("distance_left: %lf\r\n", distance_left);
        printf("distance_right: %lf\r\n", distance_right);
@@ -237,15 +248,15 @@ int main(int argc, char **argv)
 
        if(distance_left < distance_right && distance_left < OBSTACLE_DISTANCE){
 
-        wb_motor_set_velocity(wheel_1, -6.66);
-        wb_motor_set_velocity(wheel_2, -6.66);
+        wb_motor_set_velocity(wheel_1, 0);
+        wb_motor_set_velocity(wheel_2, 6.66);
         wb_motor_set_velocity(wheel_3, -6.66);
     
        }
        else if(distance_left > distance_right && distance_right < OBSTACLE_DISTANCE){
     
-        wb_motor_set_velocity(wheel_1, 6.66);
-        wb_motor_set_velocity(wheel_2, 6.66);
+        wb_motor_set_velocity(wheel_1, 0);
+        wb_motor_set_velocity(wheel_2, -6.66);
         wb_motor_set_velocity(wheel_3, 6.66);
       }
     
