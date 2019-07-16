@@ -34,14 +34,15 @@
 ///global variables////
 int turn_left = 0;
 int turn_right = 0;
-double compare;
 int a = 1;
 int m = 0;
-int c=0;
+double compare;
 float angularVel, linealVel,RPM;
 
 /////encoder//////////
 double position = 0;
+double c=0;
+double posFinal;
 
 ////distance sensor////
 double distance_left = 0;
@@ -221,13 +222,13 @@ int main(int argc, char **argv)
   
       //Read Position Sensor//
       position = wb_position_sensor_get_value(pos1);
-      compare = position-c ;
+      posFinal = position-c ;
       c = position;
       
       
-      linealVel= ((compare/0.064)*0.06);
-      angularVel= (compare/0.064);
-      RPM =(compare*60)/(2*PI);
+      linealVel= (( posFinal/0.064)*0.06);
+      angularVel= ( posFinal/0.064);
+      RPM =( posFinal*60)/(2*PI);
       
       //RPM =(compare/0.064)*(60/(2*3.1416));
       
@@ -235,7 +236,7 @@ int main(int argc, char **argv)
   
        printf("distance_left: %lf\r\n", distance_left);
        printf("distance_right: %lf\r\n", distance_right);
-       printf("Encoder1: %lf\r\n", position);
+       printf("Encoder1: %f\r\n", position);
        printf("Linear Velocity: %f\r\n", linealVel);
        printf("Angular Velocity: %f\r\n", angularVel);
        printf("RPM: %f\r\n", RPM);
