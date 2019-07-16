@@ -3,7 +3,7 @@ WorldInfo {
 }
 Viewpoint {
   orientation 0.6842780440639797 0.6362820047764332 0.35624257018169136 4.911695262803741
-  position -0.5343050058820991 1.9551929166492086 0.6031685949095489
+  position -4.10078074796391 9.056181131478676 3.1000755420461155
 }
 TexturedBackground {
 }
@@ -13,6 +13,7 @@ Floor {
 }
 Robot {
   translation 0 0.10000000000000002 0
+  rotation 0 1 0 1.0471975479999998
   children [
     DEF BODY Shape {
       appearance DEF PURPLE PBRAppearance {
